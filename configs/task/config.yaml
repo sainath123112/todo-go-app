@@ -1,0 +1,2 @@
+task_service:
+  port: 8080
