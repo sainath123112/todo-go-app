@@ -30,10 +30,10 @@ func init() {
 }
 
 func GetTasksHandler(w http.ResponseWriter, r *http.Request) {
-	var taskArray []model.TaskResponse
 	vars := mux.Vars(r)
 	userId, _ := strconv.Atoi(vars["userid"])
-	w.Header().Set("Content-Type", "application/json")
+	var taskArray []model.TaskResponse
+
 	if result := db.Model(&model.Task{}).Where("user_id = ?", userId).Find(&taskArray); len(taskArray) > 0 {
 		json.NewEncoder(w).Encode(&taskArray)
 	} else {
@@ -43,12 +43,17 @@ func GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetSingleTaskHandler(w http.ResponseWriter, r *http.Request) {
-	var task model.TaskResponse
+	var taskResponse model.TaskResponse
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
-	db.Model(&model.Task{}).First(&task, id)
-	json.NewEncoder(w).Encode(&task)
+	userId, _ := strconv.Atoi(vars["userid"])
+	err := db.Model(&model.Task{}).Where("id = ? and user_id = ?", id, userId).First(&taskResponse, id).Error
+	if err == gorm.ErrRecordNotFound {
+		json.NewEncoder(w).Encode(&ErrorStruct{Message: "No task found for task id: " + vars["id"], ErrorMessage: err})
+		return
+	}
+	json.NewEncoder(w).Encode(&taskResponse)
 
 }
 

@@ -29,6 +29,7 @@ func main() {
 	yaml.Unmarshal(data, &config)
 
 	r := mux.NewRouter()
+	r.Use(handler.AuthenticationMiddleware)
 	r.HandleFunc("/tasks/{userid}", handler.GetTasksHandler).Methods("GET")
 	r.HandleFunc("/tasks/{userid}/{id}", handler.GetSingleTaskHandler).Methods("GET")
 	r.HandleFunc("/tasks/{userid}", handler.PostTaskHandler).Methods("POST")
@@ -36,6 +37,7 @@ func main() {
 	r.HandleFunc("/tasks/{userid}/{id}", handler.DeleteTaskHandler).Methods("DELETE")
 	http.Handle("/", r)
 	log.Println("Listening on port: " + config.TaskServiceStruct.Port)
+
 	http.ListenAndServe(":"+config.TaskServiceStruct.Port, nil)
 
 }

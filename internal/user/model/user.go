@@ -17,6 +17,16 @@ type User struct {
 	Tasks        []model.Task `json:"-"`
 }
 
+type TokenResponse struct {
+	Message string `json:"message"`
+	Token   string `json:"token"`
+}
+
+type UserLogin struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 type UserDetails struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
